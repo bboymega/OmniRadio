@@ -1428,7 +1428,10 @@ export default function Page() {
           </div>
 
           {/* SOURCE BUTTON */}
-          <div className="relative shrink-0">
+          <div
+            ref={sidebarSourceRef}
+            className="relative shrink-0"
+          >
             <button
               type="button"
               onClick={() =>
@@ -1450,7 +1453,6 @@ export default function Page() {
 
             {/* SOURCE MENU */}
             <div
-              ref={sidebarSourceRef}
               className={`absolute bottom-14 right-0 w-72 overflow-hidden rounded-2xl border border-white/10 bg-zinc-900 shadow-2xl transition-all duration-200 ${
                 sourceMenuOpen
                   ? "pointer-events-auto translate-y-0 opacity-100"
@@ -1605,7 +1607,10 @@ export default function Page() {
 
         {/* TOP BAR */}
         <div className="absolute left-6 top-6 z-10 flex items-center gap-3">
-          <div className="relative">
+          <div
+            ref={fsSourceRef}
+            className="relative"
+          >
             <button
               type="button"
               onClick={() =>
@@ -1618,7 +1623,6 @@ export default function Page() {
             </button>
 
             <div
-              ref={fsSourceRef}
               className={`absolute left-0 top-12 w-72 overflow-hidden rounded-2xl border border-white/10 bg-zinc-900 shadow-2xl transition-all duration-200 ${
                 fsSourceOpen
                   ? "pointer-events-auto translate-y-0 opacity-100"

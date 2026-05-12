@@ -1045,6 +1045,12 @@ export default function Page() {
 
       setPlaying(1);
 
+      manualStopRef.current = true;
+
+      hardResetAudio();
+
+      manualStopRef.current = false;
+
       const nextUrl = stealthMode
         ? `http://127.0.0.87:8787/proxy?url=${encodeURIComponent(
             source.url,

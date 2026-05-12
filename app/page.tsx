@@ -1798,31 +1798,14 @@ export default function Page() {
 
             {/* SOURCE MENU */}
             <div
-              className={`
-                absolute bottom-14 right-0 w-80
-                overflow-hidden
-
-                rounded-[28px]
-                border border-white/[0.08]
-
-                bg-zinc-900/90
-                shadow-[0_20px_80px_rgba(0,0,0,0.55)]
-
-                backdrop-blur-2xl
-
-                origin-bottom-right
-
-                ${modalTransition}
-
-                ${
-                  sourceMenuOpen
-                    ? "pointer-events-auto translate-y-0 opacity-100 scale-100"
-                    : "pointer-events-none translate-y-3 opacity-0 scale-[0.96]"
-                }
-              `}
+              className={`absolute bottom-14 right-0 w-72 overflow-hidden rounded-2xl border border-white/10 bg-zinc-900 shadow-2xl transition-all duration-200 ${
+                sourceMenuOpen
+                  ? "pointer-events-auto translate-y-0 opacity-100"
+                  : "pointer-events-none translate-y-2 opacity-0"
+              }`}
             >
-              <div className="border-b border-white/[0.06] px-5 py-4">
-                <p className="text-base font-semibold tracking-tight">
+              <div className="border-b border-white/5 px-4 py-3">
+                <p className="text-sm font-medium">
                   Sources
                 </p>
 
@@ -1843,19 +1826,7 @@ export default function Page() {
                       onClick={() =>
                         void changeSource(source)
                       }
-                      className="
-                        flex w-full cursor-pointer
-                        items-center justify-between
-
-                        rounded-2xl
-                        px-4 py-3.5
-                        text-left
-
-                        transition-all duration-200
-
-                        hover:bg-white/[0.06]
-                        active:scale-[0.985]
-                      "
+                      className="flex w-full cursor-pointer items-center justify-between rounded-xl px-3 py-3 text-left transition hover:bg-white/5"
                     >
                       <div className="min-w-0">
                         <p className="truncate text-sm font-medium">
@@ -1997,28 +1968,11 @@ export default function Page() {
             </button>
 
             <div
-              className={`
-                absolute left-0 top-14 w-80
-                overflow-hidden
-
-                rounded-[28px]
-                border border-white/[0.08]
-
-                bg-zinc-900/90
-                shadow-[0_20px_80px_rgba(0,0,0,0.55)]
-
-                backdrop-blur-2xl
-
-                origin-top-left
-
-                ${modalTransition}
-
-                ${
-                  fsSourceOpen
-                    ? "pointer-events-auto translate-y-0 opacity-100 scale-100"
-                    : "pointer-events-none translate-y-3 opacity-0 scale-[0.96]"
-                }
-              `}
+              className={`absolute left-0 top-12 w-72 overflow-hidden rounded-2xl border border-white/10 bg-zinc-900 shadow-2xl transition-all duration-200 ${
+                fsSourceOpen
+                  ? "pointer-events-auto translate-y-0 opacity-100"
+                  : "pointer-events-none translate-y-2 opacity-0"
+              }`}
             >
               <div className="border-b border-white/5 px-4 py-3">
                 <p className="text-sm font-medium">
@@ -2031,7 +1985,7 @@ export default function Page() {
               </div>
 
               <div className="max-h-[320px] overflow-y-auto p-2">
-                {sources.map((source, index) => {
+                {sources.map((source) => {
                   const active =
                     source.url ===
                     selectedSource?.url;
@@ -2039,9 +1993,6 @@ export default function Page() {
                   return (
                     <button
                       key={source.id}
-                      style={{
-                        transitionDelay: `${index * 35}ms`,
-                      }}
                       type="button"
                       onClick={() => {
                         void changeSource(
@@ -2063,16 +2014,17 @@ export default function Page() {
                       </div>
 
                       {active && (
-                        <div className="flex h-7 w-7 items-center justify-center rounded-full bg-white text-black">
-                          <Check size={14} />
-                        </div>
+                        <Check
+                          size={18}
+                          className="text-green-400"
+                        />
                       )}
                     </button>
                   );
                 })}
               </div>
 
-              <div className="flex items-center justify-between border-t border-white/[0.06] px-5 py-4">
+              <div className="flex items-center justify-between border-t border-white/5 px-4 py-3">
                 <div>
                   <p className="text-sm font-medium">
                     Stealth Mode
@@ -2088,31 +2040,18 @@ export default function Page() {
                   onClick={() =>
                     void toggleStealthMode()
                   }
-                  className={`
-                    relative h-6 w-11 rounded-full
-                    transition-all duration-300
-
-                    ${
-                      stealthMode
-                        ? "bg-white"
-                        : "bg-white/10"
-                    }
-                  `}
+                  className={`relative h-5 w-9 rounded-full transition ${
+                    stealthMode
+                      ? "bg-white"
+                      : "bg-white/10"
+                  }`}
                 >
                   <div
-                    className={`
-                      absolute top-0.5
-                      h-5 w-5 rounded-full
-                      bg-black
-
-                      transition-all duration-300
-
-                      ${
-                        stealthMode
-                          ? "left-[22px]"
-                          : "left-0.5"
-                      }
-                    `}
+                    className={`absolute top-0.5 h-4 w-4 rounded-full bg-black transition-all ${
+                      stealthMode
+                        ? "left-[18px]"
+                        : "left-0.5"
+                    }`}
                   />
                 </button>
               </div>
@@ -2125,20 +2064,7 @@ export default function Page() {
 
                     setFsSourceOpen(false);
                   }}
-                  className="
-                    flex w-full items-center justify-center gap-2
-
-                    rounded-2xl
-                    bg-white/[0.05]
-
-                    px-4 py-3.5
-                    text-sm font-medium
-
-                    transition-all duration-200
-
-                    hover:bg-white/[0.08]
-                    active:scale-[0.985]
-                  "
+                  className="flex w-full items-center justify-center gap-2 rounded-xl bg-white/5 px-3 py-3 text-sm transition hover:bg-white/10"
                 >
                   <Plus size={16} />
                   Manage Sources

@@ -223,6 +223,10 @@ export default function Page() {
 
           await audio.play();
 
+          await MediaSession.setPlaybackState({
+            playbackState: "playing",
+          });
+
           retryCountRef.current = 0;
 
           recoveringRef.current = false;
@@ -231,9 +235,6 @@ export default function Page() {
 
           startHealthCheck(2500);
 
-          await MediaSession.setPlaybackState({
-            playbackState: "playing",
-          });
         } catch (err) {
           console.error(
             "Failed to remount stream after stealth toggle",
@@ -260,6 +261,8 @@ export default function Page() {
   const recoveringRef = useRef(false);
 
   const manualStopRef = useRef(false);
+
+  const pauseTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const stopHealthCheck = () => {
     if (healthIntervalRef.current !== null) {
@@ -318,15 +321,15 @@ export default function Page() {
 
       await audio.play();
 
+      await MediaSession.setPlaybackState({
+        playbackState: "playing",
+      });
+
       recoveringRef.current = false;
 
       retryCountRef.current = 0;
 
       setPlaying(2);
-
-      await MediaSession.setPlaybackState({
-        playbackState: "playing",
-      });
 
       startHealthCheck(2500);
     } catch (err) {
@@ -423,27 +426,59 @@ export default function Page() {
 
     if (!audio) return;
 
-    const handleBrowserPause = async () => {
-      if (
-        manualStopRef.current ||
-        recoveringRef.current
-      ) {
-        return;
-      }
+    const syncPlayingState = async () => {
+      if (!audio.paused && !audio.ended) {
+        externalPauseRef.current = false;
 
-      if (playingRef.current === 2) {
-        externalPauseRef.current = true;
+        setPlaying(2);
 
-        stopHealthCheck();
+        await MediaSession.setPlaybackState({
+          playbackState: "playing",
+        });
 
-        recoveringRef.current = false;
-
+        startHealthCheck(2500);
+      } else {
         setPlaying(0);
 
         await MediaSession.setPlaybackState({
           playbackState: "paused",
         });
       }
+    };
+
+    const handleAudioPlaying = async () => {
+      if (pauseTimeoutRef.current) {
+        clearTimeout(pauseTimeoutRef.current);
+
+        pauseTimeoutRef.current = null;
+      }
+
+      await syncPlayingState();
+    };
+
+    const handleAudioPause = async () => {
+      if (
+        manualStopRef.current ||
+        recoveringRef.current ||
+        userPausedRef.current
+      ) {
+        return;
+      }
+
+      // transient interruption protection
+      pauseTimeoutRef.current = setTimeout(async () => {
+        if (audio.paused) {
+          externalPauseRef.current = true;
+
+          stopHealthCheck();
+
+          setPlaying(0);
+
+          await MediaSession.setPlaybackState({
+            playbackState: "paused",
+          });
+        }
+      }, 1500);
     };
 
     const handleAudioError = async () => {
@@ -464,20 +499,53 @@ export default function Page() {
       startHealthCheck(2000);
     };
 
+    const handleEnded = async () => {
+      setPlaying(0);
+
+      await MediaSession.setPlaybackState({
+        playbackState: "paused",
+      });
+    };
+
+    audio.addEventListener("pause", handleAudioPause);
+
     audio.addEventListener(
-      "pause",
-      handleBrowserPause,
+      "playing",
+      handleAudioPlaying,
     );
 
     audio.addEventListener(
-      "error",
-      handleAudioError,
+      "play",
+      handleAudioPlaying,
     );
+
+    audio.addEventListener("ended", handleEnded);
+
+    audio.addEventListener("error", handleAudioError);
 
     return () => {
+      if (pauseTimeoutRef.current) {
+        clearTimeout(pauseTimeoutRef.current);
+      }
+
       audio.removeEventListener(
         "pause",
-        handleBrowserPause,
+        handleAudioPause,
+      );
+
+      audio.removeEventListener(
+        "playing",
+        handleAudioPlaying,
+      );
+
+      audio.removeEventListener(
+        "play",
+        handleAudioPlaying,
+      );
+
+      audio.removeEventListener(
+        "ended",
+        handleEnded,
       );
 
       audio.removeEventListener(
@@ -686,10 +754,6 @@ export default function Page() {
           try {
             setPlaying(1);
 
-            await MediaSession.setPlaybackState({
-              playbackState: "playing",
-            });
-
             hardResetAudio();
 
             audio.src = streamUrlRef.current;
@@ -697,6 +761,10 @@ export default function Page() {
             audio.load();
 
             await audio.play();
+
+            await MediaSession.setPlaybackState({
+              playbackState: "playing",
+            });
 
             retryCountRef.current = 0;
 
@@ -768,10 +836,6 @@ export default function Page() {
 
         setPlaying(1);
 
-        await MediaSession.setPlaybackState({
-          playbackState: "playing",
-        });
-
         hardResetAudio();
 
         audio.src = streamUrlRef.current;
@@ -779,6 +843,10 @@ export default function Page() {
         audio.load();
 
         await audio.play();
+
+        await MediaSession.setPlaybackState({
+          playbackState: "playing",
+        });
 
         retryCountRef.current = 0;
 
@@ -849,10 +917,6 @@ export default function Page() {
     try {
       setPlaying(1);
 
-      await MediaSession.setPlaybackState({
-        playbackState: "playing",
-      });
-
       hardResetAudio();
 
       audio.src = source.url;
@@ -860,6 +924,10 @@ export default function Page() {
       audio.load();
 
       await audio.play();
+
+      await MediaSession.setPlaybackState({
+        playbackState: "playing",
+      });
 
       setPlaying(2);
 
@@ -1057,6 +1125,10 @@ export default function Page() {
 
           await audio.play();
 
+          await MediaSession.setPlaybackState({
+            playbackState: "playing",
+          });
+
           retryCountRef.current = 0;
 
           recoveringRef.current = false;
@@ -1065,9 +1137,6 @@ export default function Page() {
 
           startHealthCheck(2500);
 
-          await MediaSession.setPlaybackState({
-            playbackState: "playing",
-          });
         } catch (err) {
           console.error(
             "Failed to mount new stream",
@@ -1205,6 +1274,10 @@ export default function Page() {
 
               await audio.play();
 
+              await MediaSession.setPlaybackState({
+                playbackState: "playing",
+              });
+
               retryCountRef.current = 0;
 
               recoveringRef.current = false;
@@ -1213,9 +1286,6 @@ export default function Page() {
 
               startHealthCheck(2500);
 
-              await MediaSession.setPlaybackState({
-                playbackState: "playing",
-              });
             } catch (err) {
               console.error(
                 "Failed to remount edited stream",

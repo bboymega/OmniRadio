@@ -4,7 +4,7 @@ Lightweight radio app that turns your stream pipe (`mpd` or `ffmpeg`) into a non
 
 ## Download
 
-[⬇ Latest Release](../../releases/1.1)
+[⬇ Latest Release](../../releases/1.2)
 
 ## Screenshots
 

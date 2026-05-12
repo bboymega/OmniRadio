@@ -200,7 +200,7 @@ export default function Page() {
       return;
     }
 
-    const wasPlaying = playingRef.current === 2;
+    const wasPlaying = playingRef.current !== 0;
 
     // fully reset old connection
     manualStopRef.current = true;
@@ -218,6 +218,8 @@ export default function Page() {
         const session = beginNewPlaybackSession();
 
         try {
+          const requestId = ++playbackRequestIdRef.current;
+
           setPlaying(1);
 
           audio.src = streamUrl;
@@ -225,6 +227,14 @@ export default function Page() {
           audio.load();
 
           await audio.play();
+
+          if (requestId !== playbackRequestIdRef.current) {
+            audio.pause();
+
+            hardResetAudio();
+
+            return;
+          }
 
           if (
             !isPlaybackSessionActive(session)
@@ -272,6 +282,8 @@ export default function Page() {
   const manualStopRef = useRef(false);
 
   const pauseTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const playbackRequestIdRef = useRef(0);
 
   const playbackSessionRef = useRef(0);
 
@@ -343,6 +355,8 @@ export default function Page() {
     }
 
     try {
+      const requestId = ++playbackRequestIdRef.current;
+
       hardResetAudio();
 
       audio.src = streamUrlRef.current;
@@ -351,7 +365,14 @@ export default function Page() {
 
       await audio.play();
 
-      // stale reconnect guard
+      if (requestId !== playbackRequestIdRef.current) {
+        audio.pause();
+
+        hardResetAudio();
+
+        return;
+      }
+
       if (
         !isPlaybackSessionActive(session)
       ) {
@@ -786,6 +807,8 @@ export default function Page() {
 
             const session = beginNewPlaybackSession();
 
+            const requestId = ++playbackRequestIdRef.current;
+
             setPlaying(1);
 
             hardResetAudio();
@@ -795,6 +818,14 @@ export default function Page() {
             audio.load();
 
             await audio.play();
+
+            if (requestId !== playbackRequestIdRef.current) {
+              audio.pause();
+
+              hardResetAudio();
+
+              return;
+            }
 
             if (
               !isPlaybackSessionActive(session)
@@ -876,6 +907,8 @@ export default function Page() {
 
         streamFailedRef.current = false;
 
+        const requestId = ++playbackRequestIdRef.current;
+
         setPlaying(1);
 
         hardResetAudio();
@@ -885,6 +918,14 @@ export default function Page() {
         audio.load();
 
         await audio.play();
+
+        if (requestId !== playbackRequestIdRef.current) {
+          audio.pause();
+
+          hardResetAudio();
+
+          return;
+        }
 
         if (
           !isPlaybackSessionActive(session)
@@ -947,8 +988,12 @@ export default function Page() {
 
     const audio = audioRef.current;
 
+    // TRUE only if stream was actively playing
     const wasPlaying =
-      playingRef.current !== 0;
+      !!audio &&
+      !audio.paused &&
+      !audio.ended &&
+      playingRef.current != 0;
 
     // invalidate old async tasks
     const session =
@@ -957,25 +1002,20 @@ export default function Page() {
     stopHealthCheck();
 
     recoveringRef.current = false;
-
     retryCountRef.current = 0;
-
     externalPauseRef.current = false;
-
     streamFailedRef.current = false;
 
-    userPausedRef.current = false;
+    // Preserve user pause intent
+    userPausedRef.current = !wasPlaying;
 
     manualStopRef.current = true;
 
-    // fully destroy old stream
+    // destroy old stream
     if (audio) {
       audio.pause();
-
       audio.removeAttribute("src");
-
       audio.src = "";
-
       audio.load();
     }
 
@@ -992,10 +1032,17 @@ export default function Page() {
 
     if (!wasPlaying || !audio) {
       setPlaying(0);
+
+      await MediaSession.setPlaybackState({
+        playbackState: "paused",
+      });
+
       return;
     }
 
     try {
+      const requestId = ++playbackRequestIdRef.current;
+
       setPlaying(1);
 
       const nextUrl = stealthMode
@@ -1009,6 +1056,14 @@ export default function Page() {
       audio.load();
 
       await audio.play();
+
+      if (requestId !== playbackRequestIdRef.current) {
+        audio.pause();
+
+        hardResetAudio();
+
+        return;
+      }
 
       // ignore stale playback
       if (
@@ -1192,8 +1247,7 @@ export default function Page() {
 
     await saveSources(updated);
 
-    const wasPlaying =
-      playingRef.current === 2;
+    const wasPlaying = playingRef.current !== 0;
 
     setSelectedSource(source);
 
@@ -1212,6 +1266,8 @@ export default function Page() {
         const session = beginNewPlaybackSession();
 
         try {
+          const requestId = ++playbackRequestIdRef.current;
+
           setPlaying(1);
 
           manualStopRef.current = true;
@@ -1233,6 +1289,14 @@ export default function Page() {
           audio.load();
 
           await audio.play();
+
+          if (requestId !== playbackRequestIdRef.current) {
+            audio.pause();
+
+            hardResetAudio();
+
+            return false;
+          }
 
           if (
             !isPlaybackSessionActive(session)
@@ -1344,8 +1408,7 @@ export default function Page() {
           (s) => s.id === editingSource.id,
         ) || null;
 
-      const wasPlaying =
-        playingRef.current === 2;
+      const wasPlaying = playingRef.current !== 0;
 
       const urlChanged =
         normalizedUrl !== editingSource.url;
@@ -1370,6 +1433,8 @@ export default function Page() {
             const session = beginNewPlaybackSession();
 
             try {
+              const requestId = ++playbackRequestIdRef.current;
+
               setPlaying(1);
 
               manualStopRef.current = true;
@@ -1391,6 +1456,14 @@ export default function Page() {
               audio.load();
 
               await audio.play();
+
+              if (requestId !== playbackRequestIdRef.current) {
+                audio.pause();
+
+                hardResetAudio();
+
+                return;
+              }
 
               if (
                 !isPlaybackSessionActive(session)
@@ -1443,16 +1516,23 @@ export default function Page() {
       (s) => s.id !== id,
     );
 
+    const wasPlaying = playingRef.current !== 0;
+
     await saveSources(updated);
 
     if (selectedSource?.id === id) {
       if (updated.length > 0) {
-        setSelectedSource(updated[0]);
-
         await Preferences.set({
           key: SELECTED_SOURCE_STORAGE_KEY,
           value: updated[0].id,
         });
+
+        if (wasPlaying) {
+          await changeSource(updated[0]);
+        } else {
+          setSelectedSource(updated[0]);
+        }
+
       } else {
         setSelectedSource(null);
 

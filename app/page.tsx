@@ -1139,6 +1139,30 @@ export default function Page() {
     return `https://${trimmed}`;
   };
 
+  const canonicalizeStreamUrl = (
+    input: string,
+  ) => {
+    const normalized =
+      normalizeStreamUrl(input).trim();
+
+    try {
+      const url = new URL(normalized);
+
+      // normalize hostname casing
+      url.hostname = url.hostname.toLowerCase();
+
+      // remove trailing slash
+      url.pathname = url.pathname.replace(
+        /\/+$/,
+        "",
+      );
+
+      return url.toString();
+    } catch {
+      return normalized.toLowerCase();
+    }
+  };
+
   const isValidStreamUrl = (url: string) => {
     return /^https?:\/\//i.test(url);
   };
@@ -1235,6 +1259,23 @@ export default function Page() {
     if (duplicateName) {
       setSourceError(
         "A station with this name already exists",
+      );
+
+      return false;
+    }
+
+    const canonicalUrl =
+      canonicalizeStreamUrl(normalizedUrl);
+
+    const duplicateUrl = sources.some(
+      (source) =>
+        canonicalizeStreamUrl(source.url) ===
+        canonicalUrl,
+    );
+
+    if (duplicateUrl) {
+      setSourceError(
+        "A station with this stream URL already exists",
       );
 
       return false;
@@ -1388,6 +1429,24 @@ export default function Page() {
       if (duplicateName) {
         setSourceError(
           "A station with this name already exists",
+        );
+
+        return;
+      }
+
+      const canonicalUrl =
+        canonicalizeStreamUrl(normalizedUrl);
+
+      const duplicateUrl = sources.some(
+        (source) =>
+          source.id !== editingSource.id &&
+          canonicalizeStreamUrl(source.url) ===
+            canonicalUrl,
+      );
+
+      if (duplicateUrl) {
+        setSourceError(
+          "A station with this stream URL already exists",
         );
 
         return;

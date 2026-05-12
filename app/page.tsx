@@ -1608,6 +1608,12 @@ export default function Page() {
     }
   };
 
+  const modalTransition =
+    "transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]";
+
+  const backdropTransition =
+    "transition-opacity duration-300 ease-out";
+
   const ChannelArtwork = () => (
     <svg
       viewBox="0 0 100 100"
@@ -1792,14 +1798,31 @@ export default function Page() {
 
             {/* SOURCE MENU */}
             <div
-              className={`absolute bottom-14 right-0 w-72 overflow-hidden rounded-2xl border border-white/10 bg-zinc-900 shadow-2xl transition-all duration-200 ${
-                sourceMenuOpen
-                  ? "pointer-events-auto translate-y-0 opacity-100"
-                  : "pointer-events-none translate-y-2 opacity-0"
-              }`}
+              className={`
+                absolute bottom-14 right-0 w-80
+                overflow-hidden
+
+                rounded-[28px]
+                border border-white/[0.08]
+
+                bg-zinc-900/90
+                shadow-[0_20px_80px_rgba(0,0,0,0.55)]
+
+                backdrop-blur-2xl
+
+                origin-bottom-right
+
+                ${modalTransition}
+
+                ${
+                  sourceMenuOpen
+                    ? "pointer-events-auto translate-y-0 opacity-100 scale-100"
+                    : "pointer-events-none translate-y-3 opacity-0 scale-[0.96]"
+                }
+              `}
             >
-              <div className="border-b border-white/5 px-4 py-3">
-                <p className="text-sm font-medium">
+              <div className="border-b border-white/[0.06] px-5 py-4">
+                <p className="text-base font-semibold tracking-tight">
                   Sources
                 </p>
 
@@ -1820,7 +1843,19 @@ export default function Page() {
                       onClick={() =>
                         void changeSource(source)
                       }
-                      className="flex w-full cursor-pointer items-center justify-between rounded-xl px-3 py-3 text-left transition hover:bg-white/5"
+                      className="
+                        flex w-full cursor-pointer
+                        items-center justify-between
+
+                        rounded-2xl
+                        px-4 py-3.5
+                        text-left
+
+                        transition-all duration-200
+
+                        hover:bg-white/[0.06]
+                        active:scale-[0.985]
+                      "
                     >
                       <div className="min-w-0">
                         <p className="truncate text-sm font-medium">
@@ -1962,11 +1997,28 @@ export default function Page() {
             </button>
 
             <div
-              className={`absolute left-0 top-12 w-72 overflow-hidden rounded-2xl border border-white/10 bg-zinc-900 shadow-2xl transition-all duration-200 ${
-                fsSourceOpen
-                  ? "pointer-events-auto translate-y-0 opacity-100"
-                  : "pointer-events-none translate-y-2 opacity-0"
-              }`}
+              className={`
+                absolute left-0 top-14 w-80
+                overflow-hidden
+
+                rounded-[28px]
+                border border-white/[0.08]
+
+                bg-zinc-900/90
+                shadow-[0_20px_80px_rgba(0,0,0,0.55)]
+
+                backdrop-blur-2xl
+
+                origin-top-left
+
+                ${modalTransition}
+
+                ${
+                  fsSourceOpen
+                    ? "pointer-events-auto translate-y-0 opacity-100 scale-100"
+                    : "pointer-events-none translate-y-3 opacity-0 scale-[0.96]"
+                }
+              `}
             >
               <div className="border-b border-white/5 px-4 py-3">
                 <p className="text-sm font-medium">
@@ -1979,7 +2031,7 @@ export default function Page() {
               </div>
 
               <div className="max-h-[320px] overflow-y-auto p-2">
-                {sources.map((source) => {
+                {sources.map((source, index) => {
                   const active =
                     source.url ===
                     selectedSource?.url;
@@ -1987,6 +2039,9 @@ export default function Page() {
                   return (
                     <button
                       key={source.id}
+                      style={{
+                        transitionDelay: `${index * 35}ms`,
+                      }}
                       type="button"
                       onClick={() => {
                         void changeSource(
@@ -2008,17 +2063,16 @@ export default function Page() {
                       </div>
 
                       {active && (
-                        <Check
-                          size={18}
-                          className="text-green-400"
-                        />
+                        <div className="flex h-7 w-7 items-center justify-center rounded-full bg-white text-black">
+                          <Check size={14} />
+                        </div>
                       )}
                     </button>
                   );
                 })}
               </div>
 
-              <div className="flex items-center justify-between border-t border-white/5 px-4 py-3">
+              <div className="flex items-center justify-between border-t border-white/[0.06] px-5 py-4">
                 <div>
                   <p className="text-sm font-medium">
                     Stealth Mode
@@ -2034,18 +2088,31 @@ export default function Page() {
                   onClick={() =>
                     void toggleStealthMode()
                   }
-                  className={`relative h-5 w-9 rounded-full transition ${
-                    stealthMode
-                      ? "bg-white"
-                      : "bg-white/10"
-                  }`}
+                  className={`
+                    relative h-6 w-11 rounded-full
+                    transition-all duration-300
+
+                    ${
+                      stealthMode
+                        ? "bg-white"
+                        : "bg-white/10"
+                    }
+                  `}
                 >
                   <div
-                    className={`absolute top-0.5 h-4 w-4 rounded-full bg-black transition-all ${
-                      stealthMode
-                        ? "left-[18px]"
-                        : "left-0.5"
-                    }`}
+                    className={`
+                      absolute top-0.5
+                      h-5 w-5 rounded-full
+                      bg-black
+
+                      transition-all duration-300
+
+                      ${
+                        stealthMode
+                          ? "left-[22px]"
+                          : "left-0.5"
+                      }
+                    `}
                   />
                 </button>
               </div>
@@ -2058,7 +2125,20 @@ export default function Page() {
 
                     setFsSourceOpen(false);
                   }}
-                  className="flex w-full items-center justify-center gap-2 rounded-xl bg-white/5 px-3 py-3 text-sm transition hover:bg-white/10"
+                  className="
+                    flex w-full items-center justify-center gap-2
+
+                    rounded-2xl
+                    bg-white/[0.05]
+
+                    px-4 py-3.5
+                    text-sm font-medium
+
+                    transition-all duration-200
+
+                    hover:bg-white/[0.08]
+                    active:scale-[0.985]
+                  "
                 >
                   <Plus size={16} />
                   Manage Sources
@@ -2134,355 +2214,884 @@ export default function Page() {
       </div>
 
       {/* MANAGE SOURCES MODAL */}
-      {manageSourcesOpen && (
-        <div className="fixed inset-0 z-[100] bg-black/80 backdrop-blur-md">
-          <div className="flex min-h-full items-center justify-center p-4">
-            <div className="w-full max-w-md rounded-3xl border border-white/10 bg-zinc-900 p-5">
-              <div className="flex items-center justify-between">
-                <h2 className="text-lg font-semibold">
-                  Manage Sources
-                </h2>
+      <div
+        className={`
+          fixed inset-0 z-[100]
+          ${manageSourcesOpen ? "pointer-events-auto" : "pointer-events-none"}
+        `}
+      >
+        {/* BACKDROP */}
+        <div
+          onClick={() =>
+            setManageSourcesOpen(false)
+          }
+          className={`
+            absolute inset-0
+            bg-black/50 backdrop-blur-xl
+            ${backdropTransition}
 
-                <div className="flex items-center gap-2">
-                  <button
-                    onClick={() =>
-                      setAddModalOpen(true)
-                    }
-                    className="flex items-center gap-2 rounded-xl bg-white px-3 py-2 text-sm font-medium text-black"
-                  >
-                    <Plus size={16} />
-                    Add
-                  </button>
+            ${
+              manageSourcesOpen
+                ? "opacity-100"
+                : "opacity-0"
+            }
+          `}
+        />
 
-                  <button
-                    onClick={() =>
-                      setManageSourcesOpen(false)
-                    }
-                    className="rounded-full bg-white/5 p-2"
-                  >
-                    <X size={18} />
-                  </button>
-                </div>
-              </div>
+        {/* SHEET */}
+        <div
+          className={`
+            absolute inset-x-0 bottom-0
+            max-h-[85vh]
+            rounded-t-[32px]
+            border-t border-white/10
+            bg-zinc-900/95
+            px-5 pb-6 pt-3
+            shadow-[0_20px_80px_rgba(0,0,0,0.65)]
+            backdrop-blur-2xl
 
-              <div className="mt-6 max-h-[320px] space-y-2 overflow-y-auto">
-                {sources.map((source) => (
-                  <div
-                    key={source.id}
-                    className="flex items-center justify-between rounded-xl bg-white/5 p-3"
-                  >
-                    <div className="min-w-0">
-                      <p className="truncate text-sm font-medium">
-                        {source.name}
-                      </p>
+            sm:left-1/2
+            sm:max-w-md
+            sm:-translate-x-1/2
+            sm:bottom-6
+            sm:rounded-[32px]
+            sm:border
 
-                      <p className="truncate text-xs text-zinc-400">
-                        {source.url}
-                      </p>
-                    </div>
+            ${modalTransition}
 
-                    {!source.builtIn && (
-                    <div className="ml-3 flex items-center gap-2">
-                      <button
-                        onClick={() => {
-                          setEditingSource(source);
+            ${
+              manageSourcesOpen
+                ? "translate-y-0 opacity-100"
+                : "translate-y-full opacity-0"
+            }
+          `}
+        >
+          {/* HANDLE */}
+          <div className="mb-4 flex justify-center">
+            <div className="h-1.5 w-12 rounded-full bg-white/15" />
+          </div>
 
-                          setEditDraft({
-                            name: source.name,
-                            url: source.url,
-                            description:
-                              source.description === source.url
-                                ? ""
-                                : source.description || "",
-                          });
+          {/* HEADER */}
+          <div
+            className={`
+              flex items-center justify-between
+              transition-all duration-500 delay-75
 
-                          setSourceError("");
+              ${
+                manageSourcesOpen
+                  ? "translate-y-0 opacity-100"
+                  : "translate-y-4 opacity-0"
+              }
+            `}
+          >
+            <div>
+              <h2 className="text-xl font-semibold tracking-tight">
+                Manage Sources
+              </h2>
 
-                          setEditModalOpen(true);
-                        }}
-                        className="rounded-lg bg-white/10 p-2 text-white"
-                      >
-                        <Pencil size={16} />
-                      </button>
+              <p className="mt-1 text-sm text-zinc-400">
+                Add, edit, and organize streams
+              </p>
+            </div>
 
-                      <button
-                        onClick={() =>
-                          setDeleteTarget(source)
-                        }
-                        className="rounded-lg bg-red-500/20 p-2 text-red-300"
-                      >
-                        <Trash2 size={16} />
-                      </button>
-                    </div>
-                  )}
-                  </div>
-                ))}
-              </div>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() =>
+                  setAddModalOpen(true)
+                }
+                className="
+                  flex items-center gap-2
+                  rounded-2xl
+                  bg-white
+                  px-4 py-2.5
+                  text-sm font-medium
+                  text-black
+                  transition-all duration-150
+                  active:scale-95
+                "
+              >
+                <Plus size={16} />
+                Add
+              </button>
+
+              <button
+                onClick={() =>
+                  setManageSourcesOpen(false)
+                }
+                className="
+                  rounded-full
+                  bg-white/5
+                  p-2
+                  transition-all duration-150
+                  hover:bg-white/10
+                  active:scale-95
+                "
+              >
+                <X size={18} />
+              </button>
             </div>
           </div>
-        </div>
-      )}
 
-      {editModalOpen && (
-        <div className="fixed inset-0 z-[120] flex items-center justify-center bg-black/80 backdrop-blur-md px-4">
-          <div className="w-full max-w-md rounded-3xl border border-white/10 bg-zinc-900 p-5">
-            <div className="flex items-center justify-between">
-              <h2 className="text-lg font-semibold">
+          {/* LIST */}
+          <div
+            className={`
+              mt-6
+              max-h-[55vh]
+              space-y-2
+              overflow-y-auto
+              overscroll-contain
+              [-webkit-overflow-scrolling:touch]
+
+              transition-all duration-500 delay-100
+
+              ${
+                manageSourcesOpen
+                  ? "translate-y-0 opacity-100"
+                  : "translate-y-6 opacity-0"
+              }
+            `}
+          >
+            {sources.map((source, index) => (
+              <div
+                key={source.id}
+                className="
+                  flex items-center justify-between
+                  rounded-2xl
+                  border border-white/[0.05]
+                  bg-white/[0.03]
+                  p-3
+
+                  transition-all duration-200
+                  hover:bg-white/[0.05]
+                  active:scale-[0.985]
+                "
+                style={{
+                  transitionDelay: `${index * 35}ms`,
+                }}
+              >
+                <div className="min-w-0">
+                  <p className="truncate text-sm font-medium">
+                    {source.name}
+                  </p>
+
+                  <p className="truncate text-xs text-zinc-400">
+                    {source.url}
+                  </p>
+                </div>
+
+                {!source.builtIn && (
+                  <div className="ml-3 flex items-center gap-2">
+                    <button
+                      onClick={() => {
+                        setEditingSource(source);
+
+                        setEditDraft({
+                          name: source.name,
+                          url: source.url,
+                          description:
+                            source.description === source.url
+                              ? ""
+                              : source.description || "",
+                        });
+
+                        setSourceError("");
+
+                        setEditModalOpen(true);
+                      }}
+                      className="
+                        rounded-xl
+                        bg-white/10
+                        p-2
+                        transition-all duration-150
+                        hover:bg-white/15
+                        active:scale-95
+                      "
+                    >
+                      <Pencil size={16} />
+                    </button>
+
+                    <button
+                      onClick={() =>
+                        setDeleteTarget(source)
+                      }
+                      className="
+                        rounded-xl
+                        border border-red-500/20
+                        bg-red-500/10
+                        p-2
+                        text-red-300
+
+                        transition-all duration-150
+                        hover:bg-red-500/20
+                        active:scale-95
+                      "
+                    >
+                      <Trash2 size={16} />
+                    </button>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Edit Source modal */}
+      <div
+        className={`
+          fixed inset-0 z-[120]
+          ${editModalOpen ? "pointer-events-auto" : "pointer-events-none"}
+        `}
+      >
+        {/* BACKDROP */}
+        <div
+          onClick={attemptCloseEditModal}
+          className={`
+            absolute inset-0
+            bg-black/50 backdrop-blur-xl
+            ${backdropTransition}
+
+            ${
+              editModalOpen
+                ? "opacity-100"
+                : "opacity-0"
+            }
+          `}
+        />
+
+        {/* SHEET */}
+        <div
+          className={`
+            absolute inset-x-0 bottom-0
+            rounded-t-[32px]
+            border-t border-white/10
+            bg-zinc-900/95
+            px-5 pb-8 pt-3
+            shadow-[0_20px_80px_rgba(0,0,0,0.6)]
+            backdrop-blur-2xl
+
+            sm:left-1/2
+            sm:max-w-md
+            sm:-translate-x-1/2
+            sm:bottom-6
+            sm:rounded-[32px]
+            sm:border
+
+            ${modalTransition}
+
+            ${
+              editModalOpen
+                ? "translate-y-0 opacity-100"
+                : "translate-y-full opacity-0"
+            }
+          `}
+        >
+          {/* HANDLE */}
+          <div className="mb-5 flex justify-center">
+            <div className="h-1.5 w-12 rounded-full bg-white/15" />
+          </div>
+
+          {/* HEADER */}
+          <div
+            className={`
+              flex items-center justify-between
+              transition-all duration-500 delay-75
+
+              ${
+                editModalOpen
+                  ? "translate-y-0 opacity-100"
+                  : "translate-y-4 opacity-0"
+              }
+            `}
+          >
+            <div>
+              <h2 className="text-xl font-semibold tracking-tight">
                 Edit Source
               </h2>
 
-              <button
-                onClick={attemptCloseEditModal}
-                className="rounded-full bg-white/5 p-2"
-              >
-                <X size={18} />
-              </button>
+              <p className="mt-1 text-sm text-zinc-400">
+                Update stream details
+              </p>
             </div>
 
-            <div className="mt-5 space-y-3">
-              <input
-                value={editDraft.name}
-                onChange={(e) =>
-                  setEditDraft((v) => ({
-                    ...v,
-                    name: e.target.value,
-                  }))
-                }
-                placeholder="Station name"
-                className="w-full rounded-xl bg-white/5 px-4 py-3 outline-none"
-              />
+            <button
+              onClick={attemptCloseEditModal}
+              className="
+                rounded-full
+                bg-white/5
+                p-2
+                transition-all duration-150
+                hover:bg-white/10
+                active:scale-95
+              "
+            >
+              <X size={18} />
+            </button>
+          </div>
 
-              <input
-                value={editDraft.url}
-                onChange={(e) =>
-                  setEditDraft((v) => ({
-                    ...v,
-                    url: e.target.value,
-                  }))
-                }
-                placeholder="https://stream-url..."
-                className="w-full rounded-xl bg-white/5 px-4 py-3 outline-none"
-              />
+          {/* FORM */}
+          <div
+            className={`
+              mt-6 space-y-3
+              transition-all duration-500 delay-100
 
-              <input
-                value={editDraft.description}
-                onChange={(e) =>
-                  setEditDraft((v) => ({
-                    ...v,
-                    description: e.target.value,
-                  }))
-                }
-                placeholder="Optional description"
-                className="w-full rounded-xl bg-white/5 px-4 py-3 outline-none"
-              />
+              ${
+                editModalOpen
+                  ? "translate-y-0 opacity-100"
+                  : "translate-y-6 opacity-0"
+              }
+            `}
+          >
+            <input
+              value={editDraft.name}
+              onChange={(e) =>
+                setEditDraft((v) => ({
+                  ...v,
+                  name: e.target.value,
+                }))
+              }
+              placeholder="Station name"
+              className="
+                w-full rounded-2xl
+                border border-white/[0.06]
+                bg-white/[0.04]
+                px-4 py-3
+                text-white
+                outline-none
+                transition-all duration-200
+                focus:border-white/20
+                focus:bg-white/[0.06]
+              "
+            />
 
-              {sourceError && (
-                <p className="text-sm text-red-400">
-                  {sourceError}
-                </p>
-              )}
+            <input
+              value={editDraft.url}
+              onChange={(e) =>
+                setEditDraft((v) => ({
+                  ...v,
+                  url: e.target.value,
+                }))
+              }
+              placeholder="https://stream-url..."
+              className="
+                w-full rounded-2xl
+                border border-white/[0.06]
+                bg-white/[0.04]
+                px-4 py-3
+                text-white
+                outline-none
+                transition-all duration-200
+                focus:border-white/20
+                focus:bg-white/[0.06]
+              "
+            />
 
-              <button
-                onClick={() =>
-                  void saveEditedSource()
-                }
-                className="flex w-full items-center justify-center gap-2 rounded-xl bg-white py-3 font-medium text-black"
-              >
-                <Check size={18} />
-                Save Changes
-              </button>
-            </div>
+            <input
+              value={editDraft.description}
+              onChange={(e) =>
+                setEditDraft((v) => ({
+                  ...v,
+                  description: e.target.value,
+                }))
+              }
+              placeholder="Optional description"
+              className="
+                w-full rounded-2xl
+                border border-white/[0.06]
+                bg-white/[0.04]
+                px-4 py-3
+                text-white
+                outline-none
+                transition-all duration-200
+                focus:border-white/20
+                focus:bg-white/[0.06]
+              "
+            />
+
+            {sourceError && (
+              <p className="px-1 text-sm text-red-400">
+                {sourceError}
+              </p>
+            )}
+
+            <button
+              onClick={() =>
+                void saveEditedSource()
+              }
+              className="
+                flex w-full items-center justify-center gap-2
+                rounded-2xl
+                bg-white
+                py-3.5
+                font-medium
+                text-black
+                transition-all duration-150
+                active:scale-[0.98]
+              "
+            >
+              <Check size={18} />
+              Save Changes
+            </button>
           </div>
         </div>
-      )}
+      </div>
 
-      {addModalOpen && (
-        <div className="fixed inset-0 z-[120] flex items-center justify-center bg-black/80 backdrop-blur-md px-4">
-          <div className="w-full max-w-md rounded-3xl border border-white/10 bg-zinc-900 p-5">
-            <div className="flex items-center justify-between">
-              <h2 className="text-lg font-semibold">
-                Add Source
-              </h2>
+      {/* Add Source modal */}
+      <div
+        className={`
+          fixed inset-0 z-[120]
+          ${addModalOpen ? "pointer-events-auto" : "pointer-events-none"}
+        `}
+      >
+        {/* BACKDROP */}
+        <div
+          onClick={attemptCloseAddModal}
+          className={`
+            absolute inset-0
+            bg-black/50 backdrop-blur-xl
+            ${backdropTransition}
+            ${
+              addModalOpen
+                ? "opacity-100"
+                : "opacity-0"
+            }
+          `}
+        />
 
-              <button
-                onClick={attemptCloseAddModal}
-                className="rounded-full bg-white/5 p-2"
-              >
-                <X size={18} />
-              </button>
-            </div>
+        {/* SHEET */}
+        <div
+          className={`
+            absolute inset-x-0 bottom-0
+            rounded-t-[32px]
+            border-t border-white/10
+            bg-zinc-900/95
+            px-5 pb-8 pt-3
+            shadow-[0_20px_80px_rgba(0,0,0,0.6)]
+            backdrop-blur-2xl
 
-            <div className="mt-5 space-y-3">
-              <input
-                value={newSourceName}
-                onChange={(e) =>
-                  setNewSourceName(
-                    e.target.value,
-                  )
+            sm:left-1/2 sm:max-w-md sm:-translate-x-1/2
+            sm:bottom-6 sm:rounded-[32px]
+            sm:border sm:border-white/10
+
+            ${modalTransition}
+
+            ${
+              addModalOpen
+                ? "translate-y-0 opacity-100"
+                : "translate-y-full opacity-0"
+            }
+          `}
+        >
+          {/* HANDLE */}
+          <div className="mb-5 flex justify-center">
+            <div className="h-1.5 w-12 rounded-full bg-white/15" />
+          </div>
+
+          {/* HEADER */}
+          <div
+            className={`
+              flex items-center justify-between
+              transition-all duration-500 delay-75
+              ${
+                addModalOpen
+                  ? "translate-y-0 opacity-100"
+                  : "translate-y-4 opacity-0"
+              }
+            `}
+          >
+            <h2 className="text-xl font-semibold tracking-tight">
+              Add Source
+            </h2>
+
+            <button
+              onClick={attemptCloseAddModal}
+              className="
+                rounded-full
+                bg-white/5
+                p-2
+                transition-all duration-150
+                hover:bg-white/10
+                active:scale-95
+              "
+            >
+              <X size={18} />
+            </button>
+          </div>
+
+          {/* FORM */}
+          <div
+            className={`
+              mt-6 space-y-3
+              transition-all duration-500 delay-100
+              ${
+                addModalOpen
+                  ? "translate-y-0 opacity-100"
+                  : "translate-y-6 opacity-0"
+              }
+            `}
+          >
+            <input
+              value={newSourceName}
+              onChange={(e) =>
+                setNewSourceName(
+                  e.target.value,
+                )
+              }
+              placeholder="Station name"
+              className="
+                w-full rounded-2xl
+                border border-white/[0.06]
+                bg-white/[0.04]
+                px-4 py-3
+                text-white
+                outline-none
+                transition-all duration-200
+                focus:border-white/20
+                focus:bg-white/[0.06]
+              "
+            />
+
+            <input
+              value={newSourceUrl}
+              onChange={(e) => {
+                setNewSourceUrl(
+                  e.target.value,
+                );
+
+                if (sourceError) {
+                  setSourceError("");
                 }
-                placeholder="Station name"
-                className="w-full rounded-xl bg-white/5 px-4 py-3 outline-none"
-              />
+              }}
+              placeholder="https://stream-url..."
+              className="
+                w-full rounded-2xl
+                border border-white/[0.06]
+                bg-white/[0.04]
+                px-4 py-3
+                text-white
+                outline-none
+                transition-all duration-200
+                focus:border-white/20
+                focus:bg-white/[0.06]
+              "
+            />
 
-              <input
-                value={newSourceUrl}
-                onChange={(e) => {
-                  setNewSourceUrl(
-                    e.target.value,
-                  );
+            <input
+              value={newSourceDescription}
+              onChange={(e) =>
+                setNewSourceDescription(
+                  e.target.value,
+                )
+              }
+              placeholder="Optional description"
+              className="
+                w-full rounded-2xl
+                border border-white/[0.06]
+                bg-white/[0.04]
+                px-4 py-3
+                text-white
+                outline-none
+                transition-all duration-200
+                focus:border-white/20
+                focus:bg-white/[0.06]
+              "
+            />
 
-                  if (sourceError) {
-                    setSourceError("");
-                  }
-                }}
-                placeholder="https://stream-url..."
-                className="w-full rounded-xl bg-white/5 px-4 py-3 outline-none"
-              />
+            {sourceError && (
+              <p className="px-1 text-sm text-red-400">
+                {sourceError}
+              </p>
+            )}
 
-              <input
-                value={newSourceDescription}
-                onChange={(e) =>
-                  setNewSourceDescription(
-                    e.target.value,
-                  )
-                }
-                placeholder="Optional description"
-                className="w-full rounded-xl bg-white/5 px-4 py-3 outline-none"
-              />
-
-              {sourceError && (
-                <p className="text-sm text-red-400">
-                  {sourceError}
-                </p>
-              )}
-
-              <button
-                onClick={() => {
-                  void addSource();
-                }}
-                className="flex w-full items-center justify-center gap-2 rounded-xl bg-white py-3 font-medium text-black"
-              >
-                <Plus size={18} />
-                Add Source
-              </button>
-            </div>
+            <button
+              onClick={() => {
+                void addSource();
+              }}
+              className="
+                flex w-full items-center justify-center gap-2
+                rounded-2xl
+                bg-white
+                py-3.5
+                font-medium
+                text-black
+                transition-all duration-150
+                active:scale-[0.98]
+              "
+            >
+              <Plus size={18} />
+              Add Source
+            </button>
           </div>
         </div>
-      )}
+      </div>
 
-      {discardEditOpen && (
-        <div className="fixed inset-0 z-[130] flex items-center justify-center bg-black/80 backdrop-blur-md px-4">
-          <div className="w-full max-w-sm rounded-3xl border border-white/10 bg-zinc-900 p-5">
-            <h3 className="text-lg font-semibold">
+      {/* Discard Modal */}
+      <div
+        className={`
+          fixed inset-0 z-[130]
+          ${
+            discardEditOpen || discardAddOpen
+              ? "pointer-events-auto"
+              : "pointer-events-none"
+          }
+        `}
+      >
+        {/* BACKDROP */}
+        <div
+          onClick={() => {
+            setDiscardEditOpen(false);
+            setDiscardAddOpen(false);
+          }}
+          className={`
+            absolute inset-0
+            bg-black/50 backdrop-blur-xl
+            ${backdropTransition}
+
+            ${
+              discardEditOpen || discardAddOpen
+                ? "opacity-100"
+                : "opacity-0"
+            }
+          `}
+        />
+
+        {/* ALERT */}
+        <div
+          className={`
+            absolute inset-x-4 bottom-4
+            rounded-[28px]
+            border border-white/10
+            bg-zinc-900/95
+            p-5
+            shadow-[0_20px_80px_rgba(0,0,0,0.6)]
+            backdrop-blur-2xl
+
+            sm:left-1/2
+            sm:max-w-sm
+            sm:-translate-x-1/2
+
+            ${modalTransition}
+
+            ${
+              discardEditOpen || discardAddOpen
+                ? "translate-y-0 opacity-100 scale-100"
+                : "translate-y-10 opacity-0 scale-[0.96]"
+            }
+          `}
+        >
+          <div
+            className={`
+              transition-all duration-500 delay-75
+
+              ${
+                discardEditOpen || discardAddOpen
+                  ? "translate-y-0 opacity-100"
+                  : "translate-y-4 opacity-0"
+              }
+            `}
+          >
+            <h3 className="text-xl font-semibold tracking-tight">
               Discard Changes?
             </h3>
 
-            <p className="mt-2 text-sm text-zinc-400">
-              You have unsaved changes.
+            <p className="mt-2 text-sm leading-relaxed text-zinc-400">
+              Your unsaved edits will be lost.
             </p>
+          </div>
 
-            <div className="mt-5 flex gap-3">
-              <button
-                onClick={() =>
-                  setDiscardEditOpen(false)
-                }
-                className="flex-1 rounded-xl bg-white/5 py-3"
-              >
-                Continue Editing
-              </button>
+          <div
+            className={`
+              mt-6 flex gap-3
+              transition-all duration-500 delay-100
 
-              <button
-                onClick={() => {
-                  setDiscardEditOpen(false);
+              ${
+                discardEditOpen || discardAddOpen
+                  ? "translate-y-0 opacity-100"
+                  : "translate-y-6 opacity-0"
+              }
+            `}
+          >
+            <button
+              onClick={() => {
+                setDiscardEditOpen(false);
+                setDiscardAddOpen(false);
+              }}
+              className="
+                flex-1 rounded-2xl
+                bg-white/[0.06]
+                py-3 text-sm font-medium
 
+                transition-all duration-150
+                hover:bg-white/[0.1]
+                active:scale-[0.98]
+              "
+            >
+              Continue Editing
+            </button>
+
+            <button
+              onClick={() => {
+                if (discardEditOpen) {
                   closeEditModal();
-                }}
-                className="flex-1 rounded-xl bg-red-500 py-3 text-white"
-              >
-                Discard
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {discardAddOpen && (
-        <div className="fixed inset-0 z-[130] flex items-center justify-center bg-black/80 backdrop-blur-md px-4">
-          <div className="w-full max-w-sm rounded-3xl border border-white/10 bg-zinc-900 p-5">
-            <h3 className="text-lg font-semibold">
-              Discard Changes?
-            </h3>
-
-            <p className="mt-2 text-sm text-zinc-400">
-              You have unsaved changes.
-            </p>
-
-            <div className="mt-5 flex gap-3">
-              <button
-                onClick={() =>
-                  setDiscardAddOpen(false)
                 }
-                className="flex-1 rounded-xl bg-white/5 py-3"
-              >
-                Continue Editing
-              </button>
 
-              <button
-                onClick={() => {
-                  setDiscardAddOpen(false);
-
+                if (discardAddOpen) {
                   closeAddModal();
-                }}
-                className="flex-1 rounded-xl bg-red-500 py-3 text-white"
-              >
-                Discard
-              </button>
-            </div>
+                }
+
+                setDiscardEditOpen(false);
+                setDiscardAddOpen(false);
+              }}
+              className="
+                flex-1 rounded-2xl
+                bg-red-500
+                py-3 text-sm font-medium text-white
+
+                transition-all duration-150
+                hover:bg-red-400
+                active:scale-[0.98]
+              "
+            >
+              Discard
+            </button>
           </div>
         </div>
-      )}
+      </div>
 
-      {deleteTarget && (
-        <div className="fixed inset-0 z-[110] flex items-center justify-center bg-black/80 backdrop-blur-md px-4">
-          <div className="w-full max-w-sm rounded-3xl border border-white/10 bg-zinc-900 p-5">
-            <h3 className="text-lg font-semibold">
+      {/* Delete Target Modal */}
+      <div
+        className={`
+          fixed inset-0 z-[110]
+          ${deleteTarget ? "pointer-events-auto" : "pointer-events-none"}
+        `}
+      >
+        {/* BACKDROP */}
+        <div
+          onClick={() =>
+            setDeleteTarget(null)
+          }
+          className={`
+            absolute inset-0
+            bg-black/50 backdrop-blur-xl
+            ${backdropTransition}
+
+            ${
+              deleteTarget
+                ? "opacity-100"
+                : "opacity-0"
+            }
+          `}
+        />
+
+        {/* ALERT SHEET */}
+        <div
+          className={`
+            absolute inset-x-4 bottom-4
+            rounded-[28px]
+            border border-white/10
+            bg-zinc-900/95
+            p-5
+            shadow-[0_20px_80px_rgba(0,0,0,0.6)]
+            backdrop-blur-2xl
+
+            sm:left-1/2
+            sm:max-w-sm
+            sm:-translate-x-1/2
+
+            ${modalTransition}
+
+            ${
+              deleteTarget
+                ? "translate-y-0 opacity-100 scale-100"
+                : "translate-y-10 opacity-0 scale-[0.96]"
+            }
+          `}
+        >
+          <div
+            className={`
+              transition-all duration-500 delay-75
+
+              ${
+                deleteTarget
+                  ? "translate-y-0 opacity-100"
+                  : "translate-y-4 opacity-0"
+              }
+            `}
+          >
+            <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-red-500/15">
+              <Trash2
+                size={24}
+                className="text-red-300"
+              />
+            </div>
+
+            <h3 className="text-xl font-semibold tracking-tight">
               Delete Source
             </h3>
 
-            <p className="mt-2 text-sm text-zinc-400">
-              Are you sure you want to delete{" "}
+            <p className="mt-2 text-sm leading-relaxed text-zinc-400">
+              Remove{" "}
               <span className="font-medium text-white">
-                {deleteTarget.name}
-              </span>
-              ?
+                {deleteTarget?.name}
+              </span>{" "}
+              from your sources?
             </p>
+          </div>
 
-            <div className="mt-5 flex gap-3">
-              <button
-                onClick={() =>
-                  setDeleteTarget(null)
-                }
-                className="flex-1 rounded-xl bg-white/5 py-3 text-sm font-medium transition hover:bg-white/10"
-              >
-                Cancel
-              </button>
+          <div
+            className={`
+              mt-6 flex gap-3
+              transition-all duration-500 delay-100
 
-              <button
-                onClick={async () => {
-                  await removeSource(
-                    deleteTarget.id,
-                  );
+              ${
+                deleteTarget
+                  ? "translate-y-0 opacity-100"
+                  : "translate-y-6 opacity-0"
+              }
+            `}
+          >
+            <button
+              onClick={() =>
+                setDeleteTarget(null)
+              }
+              className="
+                flex-1 rounded-2xl
+                bg-white/[0.06]
+                py-3 text-sm font-medium
 
-                  setDeleteTarget(null);
-                }}
-                className="flex-1 rounded-xl bg-red-500 py-3 text-sm font-medium text-white transition hover:bg-red-400"
-              >
-                Delete
-              </button>
-            </div>
+                transition-all duration-150
+                hover:bg-white/[0.1]
+                active:scale-[0.98]
+              "
+            >
+              Cancel
+            </button>
+
+            <button
+              onClick={async () => {
+                if (!deleteTarget) return;
+
+                await removeSource(
+                  deleteTarget.id,
+                );
+
+                setDeleteTarget(null);
+              }}
+              className="
+                flex-1 rounded-2xl
+                bg-red-500
+                py-3 text-sm font-medium text-white
+
+                transition-all duration-150
+                hover:bg-red-400
+                active:scale-[0.98]
+              "
+            >
+              Delete
+            </button>
           </div>
         </div>
-      )}
+      </div>
     </div>
   );
 }

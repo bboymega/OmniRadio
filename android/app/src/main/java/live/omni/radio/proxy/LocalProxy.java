@@ -1,18 +1,24 @@
 package live.omni.radio.proxy;
 
-import java.io.IOException;
-import java.util.Map;
-
 import fi.iki.elonen.NanoHTTPD;
 
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.ResponseBody;
 
+import java.io.FilterInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Map;
+
 public class LocalProxy extends NanoHTTPD {
 
     private final OkHttpClient client =
-        new OkHttpClient();
+        new OkHttpClient.Builder()
+            .followRedirects(true)
+            .followSslRedirects(true)
+            .retryOnConnectionFailure(true)
+            .build();
 
     public LocalProxy() throws IOException {
         super("127.0.0.87", 8787);
@@ -21,6 +27,8 @@ public class LocalProxy extends NanoHTTPD {
 
     @Override
     public Response serve(IHTTPSession session) {
+
+        okhttp3.Response remote = null;
 
         try {
 
@@ -31,6 +39,7 @@ public class LocalProxy extends NanoHTTPD {
                 params.get("url");
 
             if (target == null || target.isEmpty()) {
+
                 return newFixedLengthResponse(
                     Response.Status.BAD_REQUEST,
                     "text/plain",
@@ -47,7 +56,7 @@ public class LocalProxy extends NanoHTTPD {
                     )
                     .build();
 
-            okhttp3.Response remote =
+            remote =
                 client.newCall(request)
                     .execute();
 
@@ -55,6 +64,9 @@ public class LocalProxy extends NanoHTTPD {
                 remote.body();
 
             if (body == null) {
+
+                remote.close();
+
                 return newFixedLengthResponse(
                     Response.Status.NO_CONTENT,
                     "text/plain",
@@ -62,14 +74,33 @@ public class LocalProxy extends NanoHTTPD {
                 );
             }
 
+            final okhttp3.Response finalRemote = remote;
+
+            InputStream stream =
+                new FilterInputStream(body.byteStream()) {
+
+                    @Override
+                    public void close() throws IOException {
+
+                        try {
+                            super.close();
+                        } finally {
+                            finalRemote.close();
+                        }
+                    }
+                };
+
+            String contentType =
+                remote.header(
+                    "Content-Type",
+                    "application/octet-stream"
+                );
+
             Response response =
                 newChunkedResponse(
-                    Response.Status.OK,
-                    remote.header(
-                        "Content-Type",
-                        "audio/mpeg"
-                    ),
-                    body.byteStream()
+                    Response.Status.lookup(remote.code()),
+                    contentType,
+                    stream
                 );
 
             response.addHeader(
@@ -80,6 +111,10 @@ public class LocalProxy extends NanoHTTPD {
             return response;
 
         } catch (Exception e) {
+
+            if (remote != null) {
+                remote.close();
+            }
 
             return newFixedLengthResponse(
                 Response.Status.INTERNAL_ERROR,

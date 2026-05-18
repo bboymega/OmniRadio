@@ -1947,196 +1947,223 @@ export default function Page() {
             : "pointer-events-none translate-y-full opacity-100"
         }`}
       >
-        <div className="flex justify-center pt-2">
-          <div className="h-1.5 w-12 rounded-full bg-white/20" />
-        </div>
+        {/* Safe Scroll Container */}
+        <div className="relative flex h-full flex-col overflow-y-auto overflow-x-hidden">
+          
+          {/* Drag Handle */}
+          <div className="flex shrink-0 justify-center pt-2">
+            <div className="h-1.5 w-12 rounded-full bg-white/20" />
+          </div>
 
-        {/* TOP BAR */}
-        <div className="absolute left-6 top-6 z-10 flex items-center gap-3">
-          <div
-            ref={fsSourceRef}
-            className="relative"
-          >
-            <button
-              type="button"
-              onClick={() =>
-                setFsSourceOpen((v) => !v)
-              }
-              className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full bg-white/5 transition hover:bg-white/10"
-              aria-label="Source settings"
-            >
-              <Settings size={18} />
-            </button>
-
-            <div
-              className={`absolute left-0 top-12 w-72 overflow-hidden rounded-2xl border border-white/10 bg-zinc-900 shadow-2xl transition-all duration-200 ${
-                fsSourceOpen
-                  ? "pointer-events-auto translate-y-0 opacity-100"
-                  : "pointer-events-none translate-y-2 opacity-0"
-              }`}
-            >
-              <div className="border-b border-white/5 px-4 py-3">
-                <p className="text-sm font-medium">
-                  Sources
-                </p>
-
-                <p className="mt-1 text-xs text-zinc-400">
-                  Choose a stream source
-                </p>
-              </div>
-
-              <div className="max-h-[320px] overflow-y-auto p-2">
-                {sources.map((source) => {
-                  const active =
-                    source.url ===
-                    selectedSource?.url;
-
-                  return (
-                    <button
-                      key={source.id}
-                      type="button"
-                      onClick={() => {
-                        void changeSource(
-                          source,
-                        );
-
-                        setFsSourceOpen(false);
-                      }}
-                      className="flex w-full cursor-pointer items-center justify-between rounded-xl px-3 py-3 text-left transition hover:bg-white/5"
-                    >
-                      <div className="min-w-0">
-                        <p className="truncate text-sm font-medium">
-                          {source.name}
-                        </p>
-
-                        <p className="truncate text-xs text-zinc-400">
-                          {source.description}
-                        </p>
-                      </div>
-
-                      {active && (
-                        <Check
-                          size={18}
-                          className="text-green-400"
-                        />
-                      )}
-                    </button>
-                  );
-                })}
-              </div>
-
-              <div className="flex items-center justify-between border-t border-white/5 px-4 py-3">
-                <div>
-                  <p className="text-sm font-medium">
-                    Stealth Mode
-                  </p>
-
-                  <p className="text-[11px] text-zinc-500">
-                    Improves compatibility with streams
-                  </p>
-                </div>
-
+          {/* Fullscreen Top Bar */}
+          <div className="relative z-[120] flex items-center justify-between px-6 pt-6 shrink-0">
+            
+            {/* Left Controls */}
+            <div className="flex items-center gap-3">
+              <div
+                ref={fsSourceRef}
+                className="relative z-[120]"
+              >
                 <button
                   type="button"
                   onClick={() =>
-                    void toggleStealthMode()
+                    setFsSourceOpen((v) => !v)
                   }
-                  className={`relative h-5 w-9 rounded-full transition ${
-                    stealthMode
-                      ? "bg-white"
-                      : "bg-white/10"
+                  className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full bg-white/5 transition hover:bg-white/10"
+                  aria-label="Source settings"
+                >
+                  <Settings size={18} />
+                </button>
+
+                {/* Dropdown */}
+                <div
+                  className={`absolute left-0 top-12 z-[130] w-72 overflow-hidden rounded-2xl border border-white/10 bg-zinc-900 shadow-2xl transition-all duration-200 ${
+                    fsSourceOpen
+                      ? "pointer-events-auto translate-y-0 opacity-100"
+                      : "pointer-events-none translate-y-2 opacity-0"
                   }`}
                 >
-                  <div
-                    className={`absolute top-0.5 h-4 w-4 rounded-full bg-black transition-all ${
-                      stealthMode
-                        ? "left-[18px]"
-                        : "left-0.5"
-                    }`}
-                  />
-                </button>
-              </div>
+                  <div className="max-h-[70vh] overflow-y-auto overscroll-contain">
+                    
+                    {/* Header */}
+                    <div className="border-b border-white/5 px-4 py-3">
+                      <p className="text-sm font-medium">
+                        Sources
+                      </p>
 
-              <div className="border-t border-white/5 p-2">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setManageSourcesOpen(true);
+                      <p className="mt-1 text-xs text-zinc-400">
+                        Choose a stream source
+                      </p>
+                    </div>
 
-                    setFsSourceOpen(false);
-                  }}
-                  className="flex w-full items-center justify-center gap-2 rounded-xl bg-white/5 px-3 py-3 text-sm transition hover:bg-white/10"
-                >
-                  <Plus size={16} />
-                  Manage Sources
-                </button>
+                    {/* Sources */}
+                    <div className="p-2">
+                      {sources.map((source) => {
+                        const active =
+                          source.url ===
+                          selectedSource?.url;
+
+                        return (
+                          <button
+                            key={source.id}
+                            type="button"
+                            onClick={() => {
+                              void changeSource(source);
+                              setFsSourceOpen(false);
+                            }}
+                            className="flex w-full cursor-pointer items-center justify-between rounded-xl px-3 py-3 text-left transition hover:bg-white/5"
+                          >
+                            <div className="min-w-0">
+                              <p className="truncate text-sm font-medium">
+                                {source.name}
+                              </p>
+
+                              <p className="truncate text-xs text-zinc-400">
+                                {source.description}
+                              </p>
+                            </div>
+
+                            {active && (
+                              <Check
+                                size={18}
+                                className="text-green-400"
+                              />
+                            )}
+                          </button>
+                        );
+                      })}
+                    </div>
+
+                    {/* Stealth Mode */}
+                    <div className="flex items-center justify-between border-t border-white/5 px-4 py-3">
+                      <div>
+                        <p className="text-sm font-medium">
+                          Stealth Mode
+                        </p>
+
+                        <p className="text-[11px] text-zinc-500">
+                          Improves compatibility with streams
+                        </p>
+                      </div>
+
+                      <button
+                        type="button"
+                        onClick={() =>
+                          void toggleStealthMode()
+                        }
+                        className={`relative h-5 w-9 rounded-full transition ${
+                          stealthMode
+                            ? "bg-white"
+                            : "bg-white/10"
+                        }`}
+                      >
+                        <div
+                          className={`absolute top-0.5 h-4 w-4 rounded-full bg-black transition-all ${
+                            stealthMode
+                              ? "left-[18px]"
+                              : "left-0.5"
+                          }`}
+                        />
+                      </button>
+                    </div>
+
+                    {/* Manage Sources */}
+                    <div className="border-t border-white/5 p-2">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setManageSourcesOpen(true);
+                          setFsSourceOpen(false);
+                        }}
+                        className="flex w-full items-center justify-center gap-2 rounded-xl bg-white/5 px-3 py-3 text-sm transition hover:bg-white/10"
+                      >
+                        <Plus size={16} />
+                        Manage Sources
+                      </button>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
-          </div>
-        </div>
 
-        <div className="flex items-center justify-end px-6 pt-6">
-          <button
-            type="button"
-            onClick={() =>
-              setControlsOpen(false)
-            }
-            className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full bg-white/5"
-            aria-label="Close"
-          >
-            <X size={20} />
-          </button>
-        </div>
-
-        <div className="flex flex-1 flex-col items-center justify-center px-6 text-center">
-          <div className="mb-8 flex h-40 w-40 shrink-0 items-center justify-center rounded-3xl bg-zinc-800 p-6 shadow-2xl">
-            <ChannelArtwork />
+            {/* Close Button */}
+            <button
+              type="button"
+              onClick={() =>
+                setControlsOpen(false)
+              }
+              className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full bg-white/5"
+              aria-label="Close"
+            >
+              <X size={20} />
+            </button>
           </div>
 
-          <h2 className="text-3xl font-semibold">
-            {selectedSource?.name ||
-              "No source selected"}
-          </h2>
+          {/* Main Content */}
+          <div className="flex flex-1 flex-col items-center justify-center gap-[clamp(1rem,5vw,2.618rem)] px-6 py-8 text-center landscape:flex-row landscape:justify-center landscape:gap-4 landscape:max-w-screen landscape:px-4 overflow-x-hidden">
+            
+            {/* Artwork */}
+            <div className="flex shrink-0 items-center justify-center landscape:w-[42%] landscape:max-w-[42%]">
+              <div className="flex h-40 w-40 items-center justify-center rounded-3xl bg-zinc-800 p-6 shadow-2xl sm:h-56 sm:w-56 md:h-72 md:w-72 landscape:h-auto landscape:w-full">
+                <ChannelArtwork />
+              </div>
+            </div>
 
-          <p className="mt-2 max-w-sm text-sm text-zinc-400">
-            {selectedSource?.description ||
-              "Add a radio stream to begin listening"}
-          </p>
+            {/* Info Side */}
+            <div className="flex shrink-0 flex-col items-center text-center landscape:w-[50%] landscape:max-w-[50%] landscape:items-start landscape:text-left">
+              <h2 className="text-3xl font-semibold">
+                {selectedSource?.name ||
+                  "No source selected"}
+              </h2>
 
-          <button
-            type="button"
-            onClick={() =>
-              void togglePlayback()
-            }
-            className="mt-10 flex h-24 w-24 cursor-pointer items-center justify-center rounded-full bg-white text-black transition-transform active:scale-95 disabled:opacity-70"
-            aria-label={
-              playing === 2
-                ? "Pause"
-                : "Play"
-            }
-            disabled={playing === 1}
-          >
-            {playing === 1 && (
-              <Loader2
-                size={32}
-                className="animate-spin"
-              />
-            )}
+              <p className="mt-2 max-w-sm text-sm text-zinc-400">
+                {selectedSource?.description ||
+                  "Add a radio stream to begin listening"}
+              </p>
 
-            {playing === 2 && (
-              <Square
-                size={28}
-                fill="currentColor"
-              />
-            )}
+              {selectedSource && (
+                <p className="mt-3 text-xs uppercase tracking-[0.2em] text-zinc-500">
+                  Live Stream
+                </p>
+              )}
 
-            {playing === 0 && (
-              <Play
-                size={30}
-                fill="currentColor"
-              />
-            )}
-          </button>
+              {/* Playback Button */}
+              <button
+                type="button"
+                onClick={() =>
+                  void togglePlayback()
+                }
+                className="mt-10 flex h-24 w-24 cursor-pointer items-center justify-center rounded-full bg-white text-black transition-transform active:scale-95 disabled:opacity-70"
+                aria-label={
+                  playing === 2
+                    ? "Pause"
+                    : "Play"
+                }
+                disabled={playing === 1}
+              >
+                {playing === 1 && (
+                  <Loader2
+                    size={32}
+                    className="animate-spin"
+                  />
+                )}
+
+                {playing === 2 && (
+                  <Square
+                    size={28}
+                    fill="currentColor"
+                  />
+                )}
+
+                {playing === 0 && (
+                  <Play
+                    size={30}
+                    fill="currentColor"
+                  />
+                )}
+              </button>
+            </div>
+          </div>
         </div>
       </div>
 
